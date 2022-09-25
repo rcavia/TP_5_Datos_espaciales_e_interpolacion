@@ -1,7 +1,8 @@
-########## Semivariogramas y Kriging ########################
+########## Semivariogramas y Kriging      ##########################
 ########## Ecologia Regional 2017 >> 2021 ##########################
-########## Autores: Regino Cavia y Natalia Morandeira; ######
-########## sobre datos de Anibal Carbajo #################### 
+########## Autores: Regino Cavia y Natalia Morandeira; #############
+########## sobre datos de Anibal Carbajo  ########################## 
+
 # Usaremos Mayuscula para los objetos creados por nosotros (apareceran en "Global Environment") para distinguirlos de funciones existentes en R
 # Lea la nota a la derecha del simbolo "#" antes de correr la linea, puede haber una intruccion para ud para que realice antes de correr dicha linea o puede estar explicandole que es lo que hace la intruccion. EL uso de tildes (o caracteres raros) fue evitado porque suelen desconfigurarse.
 # Para evitar "scrollear" a la derecha para continuar leyendo, puede configurar el ajuste de lineas (recomendamos): Tools > Global options > Code > tildar "Soft-wrap R source files". Es posible que le pida reiniciar RStudio
@@ -9,8 +10,9 @@
 rm(list=ls()) # Remueve los objetos de la memoria de R. En Rstudio estos aparecen en "Global environment"
               # tambien se puede hacerse con la **escoba** de la solapa Environment.
 
-# setwd("D:/EcoRegional2021/TP5/")
-setwd("d:\\basesgis\\Regional\\TP_5\\TP_5_Datos_espaciales_e_interpolacion\\") #configurar el directorio donde estan los datos y donde se guardan los datos que se escriben. En RStudio, se puede hacer a partir de la solapa Files, navegando al directorio deseado y luego con el boton More > Set as working directory.
+
+setwd("D:\\EcoRegional2021\\TP5\\") #configurar el directorio donde estan los datos y donde se guardan los datos que se escriben. En RStudio, se puede hacer a partir de la solapa Files, navegando al directorio deseado y luego con el boton More > Set as working directory.
+#setwd("d:\\basesgis\\Regional\\TP5\\TP_5_Datos_espaciales_e_interpolacion\\") dir() # que hay en el directorio de trabajo (o la carpeta del proyecto)
 dir() # que hay en el directorio de trabajo (o la carpeta del proyecto)
 getwd() #cual es el directorio de trabajo ("working directory")
 
@@ -22,42 +24,6 @@ library(sf)
 library(dismo)
 library(tmap)
 
-### Ejercicio 1: Cargamos un archivo de texto delimitado por tabulaciones
-# Descargue el archivo xls y guardelo como "Texto (delimitado por tabulaciones)(*.txt)" en el directorio de trabajo
-# Cargamos el archivo
-
-Puntos_CU <- read.delim("Ciudad_Universitaria.txt")
-class(Puntos_CU)
-str(Puntos_CU)
-plot(Puntos_CU$Long, Puntos_CU$Lat)
-
-# Libreria(sp): Convertimos el "data.frame" a un "SpatialPointsDataFrame" objeto del paquete sp
-Puntos_CU_sp <- Puntos_CU #copiamos el objeto
-coordinates(Puntos_CU) <- ~Long + Lat # lo convertimos (tambien puede usar la forma Puntos_CU_sp[ ,2:3])
-class(Puntos_CU)
-str(Puntos_CU)
-
-plot(Puntos_CU) #observe la diferencia con el grafico anterior
-plot(Puntos_CU, axes=TRUE) #
-spplot(Puntos_CU, "Id", colorkey = TRUE)
-
-# Asignamos un sisteman de referencia geográfico a nuestro SpatialPointsDataFrame
-
-proj4string(Puntos_CU) #consultamos el sistema de referencia
-
-proj4string(Puntos_CU) <- CRS("EPSG:4326") # o usando la forma: CRS("+proj=longlat +datum=WGS84 +no_defs") o WGS84 = CRS("+init=epsg:4326")
-
-proj4string(Puntos_CU) #consultamos el sistema de referencia
-
-## spTransform(meuse, WGS84)
-
-
-?CRS()
-st_as_sf(datos, coords = c("x", "y"), crs = <el numero que correspoda>)
-
-# Guardamos el objeto como archivo .shp
-writeOGR(Puntos_CU, "Puntos_Ciudad_Universitaria.shp", layer= Puntos_CU, driver="ESRI Shapefile")
-readOGR("cotas.shp")
 
 # Ejercicio 1 ### Cargamos datos vectoriales desde un archivo shp con la libreria rgdal ####
 ??readOGR
@@ -126,15 +92,15 @@ DatosEsp
 #### Graficos de burbujas ####
 bubble(DatosEsp, col = "red", main = "Altitud (m s.n.m.)", xlab = "Longitud Oeste",ylab = "Latitud Sur", maxsize = 1.2) # 
 
-# Ejercicio 4 #### Interpolación por inversa distancia ponderada y krigging #####
+# Ejercicio 4 #### Interpolaci?n por inversa distancia ponderada y krigging #####
 # Requiere library(gstat) y library(sp) 3
 
-### El primero hacemos una grilla "en blanco". Esta grilla en necesaria para luego "llenarlas" de valores con la interpolación espacial. Es un poco artesanal pero tiene la ventaja de que al ser artesanal no se crea por defecto como en algunos paquetes enlatados y no logramos hacer lo que nosotros queremos sino lo que el programador penso (que en la mayoria de los casos no se adecua a nuestras necesidades)
+### El primero hacemos una grilla "en blanco". Esta grilla en necesaria para luego "llenarlas" de valores con la interpolaci?n espacial. Es un poco artesanal pero tiene la ventaja de que al ser artesanal no se crea por defecto como en algunos paquetes enlatados y no logramos hacer lo que nosotros queremos sino lo que el programador penso (que en la mayoria de los casos no se adecua a nuestras necesidades)
 
 # Primero analizar la extension del area a interpolar
 summary(Datos) # estudiar la extension de los datos en X e Y. LIMITES a considerar (valores minimos y maximos, redondear a multiplos de 100) 
 
-?seq # vamos a usar la función "secuencia" para para armar la grilla
+?seq # vamos a usar la funci?n "secuencia" para para armar la grilla
 X1 <-seq(from=6359000, to=6376000, by=100)
 X1 # Simplemente es un listado de las coordenadas X, cada tantos metros como el tamanio de celda.
 length(X1) # cuantas columnas tiene el vector?
@@ -158,7 +124,7 @@ str(Grilla) # la estructura de "Grilla" es de grilla ;)
 head(Grilla)
 
 
-# Ejercicio 5 #### Ahora si interpolamos por inversa distancia ponderada. Revise el apunte teorico y la clase teorica para recordar que es la potencia (r o idp: inverse distance power) en este método.
+# Ejercicio 5 #### Ahora si interpolamos por inversa distancia ponderada. Revise el apunte teorico y la clase teorica para recordar que es la potencia (r o idp: inverse distance power) en este m?todo.
 
 IDP_05 <- idw(Datos$MENS_COTA ~ 1, DatosEsp, newdata=Grilla, idp = 0.5) ## idp=inverse distance power (r, potencia)
 ?idw
@@ -179,7 +145,7 @@ names(Apilado)
 windows(9,6)
 plot(Apilado)
 
-# Analice, ¿cual es la potencia mas adecuada? ¿Por que? ## exploren otros valores de potencia.
+# Analice, ?cual es la potencia mas adecuada? ?Por que? ## exploren otros valores de potencia.
 
 ## Si tiene tiempo puede hacer los mapas interactivos con tmap
 ### Para hacer el mapa interactivo en tmap es mas facil pasar a raster
@@ -279,7 +245,7 @@ writeRaster(Altitud.Kriging_5.r.pred, "kriging_predichos_5.tif", "GTiff")
 Altitud.Kriging_5.r.var = raster(Altitud.Kriging_5["var1.var"])
 writeRaster(Altitud.Kriging_5.r.var, "kriging_var_5.tif", "GTiff")
 
-## Se animan a plotear estos cuatro rásters en tmap? Si no se anima, puede abrirlos en 
+## Se animan a plotear estos cuatro r?sters en tmap? Si no se anima, puede abrirlos en 
 # Seguir en QGIS... Comparar las predicciones de Kriging con y sin limite de vecinos. Analizar la informacion provista por la capa de varianzas. Comparar con las predicciones del modelo de inversa distancia ponderada.
 
 
@@ -367,7 +333,7 @@ Fn.Vario_residuos_Sph_auto$var_model # ver (y anotar) los valores ajustados en e
 # anotar los valores ajustados semi-automaticamente en un modelo de formato "vgm"
 Fn.Vario_residuos_Sph <- vgm(psill= 32,range = 4000,nugget = 0, model="Sph") 
 
-### ¿Los valores de sill y rango cambiaron respecto al modelo realizado antes de quitar la tendencia?
+### ?Los valores de sill y rango cambiaron respecto al modelo realizado antes de quitar la tendencia?
 
 plot(Fn.Vario_residuos_Sph_auto) # comparar modelo con ajuste automatico. Indica cuantos puntos se usaron para calcular cada valor observado.
 
@@ -436,8 +402,8 @@ writeGDAL(capa_Y,'coordenadas_Y.tif',drivername='GTiff') #raster de latitud
 
 
 #### OPTATIVO 2 ####
-###¿Ahora se ve anisotropia analizando los residuos?
-#¿Deberia contruir una interpolacion por kriging anisotropico?
+###?Ahora se ve anisotropia analizando los residuos?
+#?Deberia contruir una interpolacion por kriging anisotropico?
 # Repita el punto #4 y #5 para los residuos.
 
 #### FIN de OPTATIVO 2 #####
