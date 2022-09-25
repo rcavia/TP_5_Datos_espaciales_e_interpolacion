@@ -115,3 +115,9 @@ tm_shape(sf_Puntos_CU_1) + tm_dots("Id", palette = sf.colors(7))
 
 # Puede consultar mas ejemplos para graficar con tmap en
 # https://bookdown.org/nicohahn/making_maps_with_r5/docs/tmap.html
+
+# Un libro mas que recomendable es el último libro de Pebesma & Bivard, autores de estas librerías:
+# https://r-spatial.org/book/sp-raster.html
+
+# Una version en castellano: Estadística Espacial con R (Casal y Yañez) 
+# https://rubenfcasal.github.io/estadistica_espacial/
